@@ -3,9 +3,12 @@
 // ======================================================
 
 // Apps Script public statistics endpoint
-const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzqoacZ7xqUHMuVer52px-zhAdK7EhA_sGjw1_4sZkm_dfP7SaLkpDEBSwJjPKlkU5avA/exec";
+const s = document.createElement("script");
 
+s.src =
+  "https://script.google.com/macros/s/AKfycbzqoacZ7xqUHMuVer52px-zhAdK7EhA_sGjw1_4sZkm_dfP7SaLkpDEBSwJjPKlkU5avA/exec?public=stats&callback=test123";
+
+document.head.appendChild(s);
 // ======================================================
 // LOAD PUBLIC STATISTICS
 // ======================================================
