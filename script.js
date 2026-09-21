@@ -1,68 +1,74 @@
 // ======================================================
 // KABARANGAY PUBLIC WEBSITE
-// Public statistics loader
 // ======================================================
 
+// Apps Script public statistics endpoint
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbzqoacZ7xqUHMuVer52px-zhAdK7EhA_sGjw1_4sZkm_dfP7SaLkpDEBSwJjPKlkU5avA/exec";
 
 // ======================================================
-// LOAD PUBLIC BARANGAY STATISTICS
+// LOAD PUBLIC STATISTICS
 // ======================================================
 
 function loadPublicStatistics() {
-  const populationElement = document.getElementById("population");
-  const householdsElement = document.getElementById("households");
+  const population = document.getElementById("population");
+  const households = document.getElementById("households");
 
-  if (!populationElement || !householdsElement) {
-    console.error("Statistics elements were not found.");
+  if (!population || !households) {
+    console.error("Population or household element not found.");
     return;
   }
 
-  const callbackName = "kabarangayStatsCallback_" + Date.now();
+  // Create a unique callback name
+  const callbackName = "kabarangayStats_" + Date.now();
 
+  // Create the callback that Apps Script will call
   window[callbackName] = function (data) {
-    console.log("Apps Script returned:", data);
+    console.log("Kabarangay statistics received:", data);
 
-    if (
-      data &&
-      typeof data.population !== "undefined" &&
-      typeof data.households !== "undefined"
-    ) {
-      populationElement.textContent = data.population;
-      householdsElement.textContent = data.households;
-    } else {
-      console.error("Apps Script returned invalid statistics.", data);
+    if (data) {
+      if (typeof data.population !== "undefined") {
+        population.textContent = data.population;
+      }
+
+      if (typeof data.households !== "undefined") {
+        households.textContent = data.households;
+      }
     }
 
+    // Clean up
     delete window[callbackName];
-    script.remove();
+
+    if (scriptElement) {
+      scriptElement.remove();
+    }
   };
 
-  const script = document.createElement("script");
+  // Create script request
+  const scriptElement = document.createElement("script");
 
-  script.src =
+  scriptElement.src =
     APPS_SCRIPT_URL +
     "?public=stats&callback=" +
     encodeURIComponent(callbackName);
 
-  script.async = true;
+  scriptElement.async = true;
 
-  script.onerror = function () {
+  scriptElement.onerror = function () {
     console.error("Apps Script failed to load.");
 
-    populationElement.textContent = "—";
-    householdsElement.textContent = "—";
+    population.textContent = "—";
+    households.textContent = "—";
 
     delete window[callbackName];
-    script.remove();
+    scriptElement.remove();
   };
 
-  document.head.appendChild(script);
+  document.head.appendChild(scriptElement);
 }
 
 // ======================================================
-// START
+// START WEBSITE
 // ======================================================
 
 document.addEventListener("DOMContentLoaded", function () {
